@@ -1,0 +1,320 @@
+<mat-tab-group>
+    <mat-tab label="New Job">
+
+        <div class="app-container">
+
+            <mat-form-field hintLabel="Enter Job Name">
+                <textarea matInput placeholder="Job Name" required></textarea>
+              </mat-form-field>
+              <p></p>
+
+            <mat-form-field class="app-form" hintLabel="Select Customer Name">
+                <input type="text" placeholder="Select Customer" aria-label="Number" matInput [formControl]="myControl"
+                  [matAutocomplete]="auto" required>
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let customer of filteredCustomers | async" [value]="customer">
+                    {{customer}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+
+            <p></p>
+
+            <mat-accordion>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-description>
+                      Build Your Job From A Quote
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <mat-form-field class="app-form" hintLabel="Select Quote Name">
+                      <input type="text" placeholder="Select Quote" aria-label="Number" matInput [formControl]="myControl"
+                        [matAutocomplete]="auto">
+                      <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let quote of filteredQuotes | async" [value]="quote">
+                          {{option}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-checkbox class="app-checkbox">Job Completion Closes Quote</mat-checkbox>
+                    <mat-checkbox class="app-checkbox">Transfer Quote Details To Parts and Tasks</mat-checkbox>
+
+                </mat-expansion-panel>
+              </mat-accordion>
+
+              <mat-accordion>
+                  <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                      <mat-panel-description>
+                        Job Details
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field hintLabel="Select Job Start Date">
+                        <input matInput [matDatepicker]="startpicker" placeholder="Choose a date">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                      </mat-form-field>
+
+                      <mat-form-field hintLabel="Select Job End Date">
+                          <input matInput [matDatepicker]="endpicker" placeholder="Choose a date">
+                          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="app-form" hintLabel="Assign Job">
+                            <input type="text" placeholder="Select Job Owner" aria-label="Number" matInput [formControl]="myControl"
+                              [matAutocomplete]="auto" required>
+                            <mat-autocomplete #auto="matAutocomplete">
+                              <mat-option *ngFor="let customer of filteredCustomers | async" [value]="customer">
+                                {{customer}}
+                              </mat-option>
+                            </mat-autocomplete>
+                          </mat-form-field>
+
+                      <h3 class="app-header">Job Priority</h3>
+                      <span class="app-text">Min</span>
+                      <mat-slider min="1" max="5" step="1" value="3" [tickInterval]="1"></mat-slider>
+                      <span class="app-text">Max</span>
+
+                      <mat-checkbox class="app-checkbox">Job Completion Closes Quote</mat-checkbox>
+
+                    <mat-form-field hintLabel="Enter Notes For Job">
+                        <textarea matInput placeholder="Job Notes"></textarea>
+                      </mat-form-field>
+                      <p></p>
+
+                  </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-description>
+                          Job Parts
+                        </mat-panel-description>
+                      </mat-expansion-panel-header>
+
+                      <button class="app_button" (click)="openDialog()" color=primary mat-raised-button>Add Item<mat-icon>save_alt</mat-icon>
+                      </button>
+                      <button class="app_button" color=primary mat-raised-button>Delete<mat-icon>save_alt</mat-icon> </button>
+
+                      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                          <!-- Checkbox Column -->
+                          <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef>
+                              <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                                [indeterminate]="selection.hasValue() && !isAllSelected()">
+                              </mat-checkbox>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                                [checked]="selection.isSelected(row)">
+                              </mat-checkbox>
+                            </td>
+                            <td mat-footer-cell *matFooterCellDef> </td>
+                          </ng-container>
+
+                          <!-- Item Ref -->
+                          <ng-container matColumnDef="itemcode">
+                            <th mat-header-cell *matHeaderCellDef> Item Code </th>
+                            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemcode}} </td>
+                            <td mat-footer-cell *matFooterCellDef> Total </td>
+                          </ng-container>
+
+                          <!-- Item Name -->
+                          <ng-container matColumnDef="itemname">
+                            <th mat-header-cell *matHeaderCellDef> Item Name</th>
+                            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemname}} </td>
+                            <td mat-footer-cell *matFooterCellDef> </td>
+                          </ng-container>
+
+                          <!-- Unit Cost -->
+                          <ng-container matColumnDef="unitcost">
+                            <th mat-header-cell *matHeaderCellDef> Unit Cost </th>
+                            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.unitcost | currency}} </td>
+                            <td mat-footer-cell *matFooterCellDef> </td>
+                          </ng-container>
+
+                          <!-- Qty -->
+                          <ng-container matColumnDef="qty">
+                            <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.qty}} </td>
+                            <td mat-footer-cell *matFooterCellDef> </td>
+                          </ng-container>
+
+                          <!-- Total -->
+                          <ng-container matColumnDef="total">
+                            <th mat-header-cell *matHeaderCellDef> Total </th>
+                            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.total | currency}} </td>
+                            <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
+                          </ng-container>
+
+                          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+                          <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+                        </table>
+                        <mat-paginator [pageSizeOptions]="[20, 10, 100]" showFirstLastButtons></mat-paginator>
+
+                    </mat-expansion-panel>
+                  </mat-accordion>
+
+                  <mat-accordion>
+                      <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                          <mat-panel-description>
+                            Job Orders
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <button class="app_button" (click)="openDialog()" color=primary mat-raised-button>Add Item<mat-icon>save_alt</mat-icon>
+                        </button>
+                        <button class="app_button" color=primary mat-raised-button>Delete<mat-icon>save_alt</mat-icon> </button>
+
+                        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                            <!-- Checkbox Column -->
+                            <ng-container matColumnDef="select">
+                              <th mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                </mat-checkbox>
+                              </th>
+                              <td mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                                  [checked]="selection.isSelected(row)">
+                                </mat-checkbox>
+                              </td>
+                              <td mat-footer-cell *matFooterCellDef> </td>
+                            </ng-container>
+
+                            <!-- Item Ref -->
+                            <ng-container matColumnDef="itemcode">
+                              <th mat-header-cell *matHeaderCellDef> Item Code </th>
+                              <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemcode}} </td>
+                              <td mat-footer-cell *matFooterCellDef> Total </td>
+                            </ng-container>
+
+                            <!-- Item Name -->
+                            <ng-container matColumnDef="itemname">
+                              <th mat-header-cell *matHeaderCellDef> Item Name</th>
+                              <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemname}} </td>
+                              <td mat-footer-cell *matFooterCellDef> </td>
+                            </ng-container>
+
+                            <!-- Unit Cost -->
+                            <ng-container matColumnDef="unitcost">
+                              <th mat-header-cell *matHeaderCellDef> Unit Cost </th>
+                              <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.unitcost | currency}} </td>
+                              <td mat-footer-cell *matFooterCellDef> </td>
+                            </ng-container>
+
+                            <!-- Qty -->
+                            <ng-container matColumnDef="qty">
+                              <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                              <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.qty}} </td>
+                              <td mat-footer-cell *matFooterCellDef> </td>
+                            </ng-container>
+
+                            <!-- Total -->
+                            <ng-container matColumnDef="total">
+                              <th mat-header-cell *matHeaderCellDef> Total </th>
+                              <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.total | currency}} </td>
+                              <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+                            <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+                          </table>
+                          <mat-paginator [pageSizeOptions]="[20, 10, 100]" showFirstLastButtons></mat-paginator>
+
+                        </mat-expansion-panel>
+                    </mat-accordion>
+
+                    <mat-accordion>
+                        <mat-expansion-panel>
+                          <mat-expansion-panel-header>
+                            <mat-panel-description>
+                              Job Tasks
+                            </mat-panel-description>
+                          </mat-expansion-panel-header>
+
+                          <button class="app_button" (click)="openDialog()" color=primary mat-raised-button>Add Item<mat-icon>save_alt</mat-icon>
+                          </button>
+                          <button class="app_button" color=primary mat-raised-button>Delete<mat-icon>save_alt</mat-icon> </button>
+
+                          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                              <!-- Checkbox Column -->
+                              <ng-container matColumnDef="select">
+                                <th mat-header-cell *matHeaderCellDef>
+                                  <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                  </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                  <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                                    [checked]="selection.isSelected(row)">
+                                  </mat-checkbox>
+                                </td>
+                                <td mat-footer-cell *matFooterCellDef> </td>
+                              </ng-container>
+
+                              <!-- Item Ref -->
+                              <ng-container matColumnDef="itemcode">
+                                <th mat-header-cell *matHeaderCellDef> Item Code </th>
+                                <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemcode}} </td>
+                                <td mat-footer-cell *matFooterCellDef> Total </td>
+                              </ng-container>
+
+                              <!-- Item Name -->
+                              <ng-container matColumnDef="itemname">
+                                <th mat-header-cell *matHeaderCellDef> Item Name</th>
+                                <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemname}} </td>
+                                <td mat-footer-cell *matFooterCellDef> </td>
+                              </ng-container>
+
+                              <!-- Unit Cost -->
+                              <ng-container matColumnDef="unitcost">
+                                <th mat-header-cell *matHeaderCellDef> Unit Cost </th>
+                                <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.unitcost | currency}} </td>
+                                <td mat-footer-cell *matFooterCellDef> </td>
+                              </ng-container>
+
+                              <!-- Qty -->
+                              <ng-container matColumnDef="qty">
+                                <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                                <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.qty}} </td>
+                                <td mat-footer-cell *matFooterCellDef> </td>
+                              </ng-container>
+
+                              <!-- Total -->
+                              <ng-container matColumnDef="total">
+                                <th mat-header-cell *matHeaderCellDef> Total </th>
+                                <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.total | currency}} </td>
+                                <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
+                              </ng-container>
+
+                              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                              <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+                              <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+                            </table>
+                            <mat-paginator [pageSizeOptions]="[20, 10, 100]" showFirstLastButtons></mat-paginator>
+
+                        </mat-expansion-panel>
+                      </mat-accordion>
+
+          </div>
+          <p></p>
+    </mat-tab>
+    <mat-tab label="View / Edit Job">
+      Job Status
+      Job Progress
+      Job Issues
+    </mat-tab>
+  </mat-tab-group>
+

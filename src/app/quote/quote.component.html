@@ -1,0 +1,131 @@
+<div class="app-container">
+  <mat-tab-group>
+    <mat-tab label="Book Quote">
+      <div class="app-full_width">
+        <mat-form-field class="" hintLabel="Select Customer For Quote">
+          <input type="text" placeholder="Select Customer" aria-label="Number" matInput [formControl]="myControl"
+            [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <p></p>
+        <mat-form-field hintLabel="Enter Details Of Quote Required">
+          <textarea matInput placeholder="Quote Details"></textarea>
+        </mat-form-field>
+        <p></p>
+      </div>
+      <mat-form-field hintLabel="Select Date For Customer Quote">
+        <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field style="margin-left: 2em" hintLabel="Select Time">
+        <input matInput placeholder="Time">
+      </mat-form-field>
+      <p></p>
+      <button class="app_button" color=primary mat-raised-button>Save<mat-icon>save_alt</mat-icon> </button>
+      <button class="app_button" color=primary mat-raised-button>Export to Calendar<mat-icon>calendar_today</mat-icon>
+      </button>
+    </mat-tab>
+
+    <mat-tab label="Create Quote">
+
+      <div class="app-form">
+        <div class="app-full_width">
+
+          <mat-form-field class="" hintLabel="Select Customer For Quote">
+            <input type="text" placeholder="Select Customer" aria-label="Number" matInput [formControl]="myControl"
+              [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <p></p>
+          <mat-form-field hintLabel="Enter Details Of Quote Required">
+            <textarea matInput placeholder="Quote Details"></textarea>
+          </mat-form-field>
+          <p></p>
+        </div>
+
+        <button class="app_button" (click)="openDialog()" color=primary mat-raised-button>Add Item<mat-icon>save_alt</mat-icon>
+        </button>
+        <button class="app_button" color=primary mat-raised-button>Delete<mat-icon>save_alt</mat-icon> </button>
+
+        <p></p>
+
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+              </mat-checkbox>
+            </td>
+            <td mat-footer-cell *matFooterCellDef> </td>
+          </ng-container>
+
+          <!-- Item Ref -->
+          <ng-container matColumnDef="itemcode">
+            <th mat-header-cell *matHeaderCellDef> Item Code </th>
+            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemcode}} </td>
+            <td mat-footer-cell *matFooterCellDef> Total </td>
+          </ng-container>
+
+          <!-- Item Name -->
+          <ng-container matColumnDef="itemname">
+            <th mat-header-cell *matHeaderCellDef> Item Name</th>
+            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.itemname}} </td>
+            <td mat-footer-cell *matFooterCellDef> </td>
+          </ng-container>
+
+          <!-- Unit Cost -->
+          <ng-container matColumnDef="unitcost">
+            <th mat-header-cell *matHeaderCellDef> Unit Cost </th>
+            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.unitcost | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> </td>
+          </ng-container>
+
+          <!-- Qty -->
+          <ng-container matColumnDef="qty">
+            <th mat-header-cell *matHeaderCellDef> Quantity </th>
+            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.qty}} </td>
+            <td mat-footer-cell *matFooterCellDef> </td>
+          </ng-container>
+
+          <!-- Total -->
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef> Total </th>
+            <td mat-cell *matCellDef="let quoteitem"> {{quoteitem.total | currency}} </td>
+            <td mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[20, 10, 100]" showFirstLastButtons></mat-paginator>
+
+        <p></p>
+        <button class="app_button" color=primary mat-raised-button>Save<mat-icon>save_alt</mat-icon> </button>
+        <button class="app_button" color=primary mat-raised-button>Build Job<mat-icon>build</mat-icon> </button>
+        <button class="app_button" color=primary mat-raised-button>Mail<mat-icon>mail</mat-icon> </button>
+        <button class="app_button" (click)="openDialog()" color=primary mat-raised-button>Print<mat-icon>print</mat-icon>
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Edit Quote">
+
+    </mat-tab>
+  </mat-tab-group>
+</div>

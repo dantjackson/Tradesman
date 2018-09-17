@@ -1,0 +1,35 @@
+table {
+  width: 100%;
+}
+
+tr.mat-footer-row {
+  font-weight: bold;
+}
+
+.app-checkbox {
+  font-size: small;
+  font-style: normal; color: grey;
+}
+
+.app-expansionpanel {
+  font-size: medium;
+  font-style: normal; color: grey;
+}
+
+.app-container {
+  margin-left: 1em;
+}
+
+.app-full_width {
+  display: flex;
+  margin-right: 1em;
+  flex-direction: column;
+}
+
+.app-full_width > * {
+  width: 100%;
+}
+
+.app_button {
+  margin-right: 1em;
+}

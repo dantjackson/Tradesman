@@ -1,0 +1,46 @@
+.app-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-form > * {
+  width: 100%;
+}
+
+.app-form {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.app-checkbox {
+  font-size: small;
+  font-style: normal; color: grey;
+}
+
+.app-expansionpanel {
+  font-size: medium;
+  font-style: normal; color: grey;
+}
+
+.app-header {
+  font-style: normal; color: grey;
+  font-weight:normal;
+}
+.app-text{
+  font-style: normal; color: grey;
+  font-weight:normal;
+  font-size: small;
+}
+
+.app-button {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.star {
+  display: inline-block;
+}
+
+table {
+  width: 100%;
+}
